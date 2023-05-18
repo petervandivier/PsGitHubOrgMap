@@ -14,14 +14,25 @@ function Export-GomRepos {
     Push-Location "$RepoBaseDirectory/Repos"
 
     Get-GitHubRepository -OrganizationName $OrganizationName | ForEach-Object {
-        [PsCustomObject]@{
-            Name = $_.name
+        $repoName = $_.name
+        $teams = @{}
+        Invoke-GHRestMethod -UriFragment "repos/$OrganizationName/$repoName/teams" -Method Get | ForEach-Object{
+            $teams.Add($_.name,$_.permission)
+        }
+
+        $repo = [PsCustomObject]@{
+            Name = $repoName
             Id = $_.RepositoryId
             Url = $_.RepositoryUrl
             Description = $_.description
             DefaultBranch = $_.default_branch
-            Permissions = $_.permissions
-        } | ConvertTo-Json -Depth 5 | Set-Content "$($_.name).json"
+        }
+
+        if($teams.Count -gt 0){
+            $repo | Add-Member -MemberType NoteProperty -Name Teams -Value $teams
+        }
+
+        $repo | ConvertTo-Json -Depth 5 | Set-Content "${repoName}.json"
     }
 
     Pop-Location

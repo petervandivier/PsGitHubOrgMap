@@ -10,5 +10,5 @@ function Initialize-GomConfiguration {
 
     $Folder = New-Item -ItemType Directory -Path "$HOME/.PsGitHubOrgMap" -Force
 
-    New-Item -Path "$Folder/$Name.json" -Value "{}" -ErrorAction SilentlyContinue | Out-Null
+    New-Item -Path "${Folder}/${Name}.json" -Value "{}" -ErrorAction SilentlyContinue | Out-Null
 }

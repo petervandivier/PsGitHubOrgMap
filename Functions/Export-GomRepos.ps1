@@ -17,8 +17,12 @@ function Export-GomRepos {
     Get-GitHubRepository -OrganizationName $OrganizationName | ForEach-Object {
         $repoName = $_.name
         $teams = @{}
-        Invoke-GHRestMethod -UriFragment "repos/$OrganizationName/$repoName/teams" -Method Get | ForEach-Object{
-            $teams.Add($_.name,$_.permission)
+        $permissions  = Invoke-GHRestMethod -UriFragment "repos/$OrganizationName/$repoName/teams" -Method Get 
+
+        if($permissions.Count -gt 0){
+            $permissions | ForEach-Object{
+                $teams.Add($_.name,$_.permission)
+            }
         }
 
         $repo = [PsCustomObject]@{

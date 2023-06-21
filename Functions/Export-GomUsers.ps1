@@ -1,7 +1,8 @@
 function Export-GomUsers {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [string]
         $OrganizationName,
 

@@ -1,7 +1,8 @@
 function Export-GomTeams {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [string]
         $OrganizationName,
 

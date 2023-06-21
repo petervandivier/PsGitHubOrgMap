@@ -1,7 +1,8 @@
 function Export-GomRepos {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [string]
         $OrganizationName,
 

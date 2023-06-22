@@ -2,10 +2,6 @@ function Get-GomConfiguration {
     [CmdletBinding()]
     param (
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [string]
-        $Name = $GomConfiguration.OrganizationName,
-
         [ValidateSet('PsObject','Json')]
         [string]
         $As = 'Json'

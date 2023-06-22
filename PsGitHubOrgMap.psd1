@@ -21,6 +21,7 @@
         'Export-GomUsers'
         'Export-GomTeams'
         'Export-GomRepos'
+        'Sync-GomFolder'
     )
 }
 

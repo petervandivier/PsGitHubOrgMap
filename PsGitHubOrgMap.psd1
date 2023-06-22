@@ -19,6 +19,7 @@
         'Deploy-GomRepo'
         'Deploy-GomTeam'
         'Deploy-GomUser'
+        'Export-GomOrganization'
         'Export-GomRepos'
         'Export-GomTeams'
         'Export-GomUsers'
@@ -26,6 +27,5 @@
         'Import-GomConfiguration'
         'Initialize-GomConfiguration'
         'Initialize-GomFolder'
-        'Sync-GomFolder'
     )
 }

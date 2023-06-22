@@ -1,4 +1,4 @@
-function Sync-GomFolder {
+function Export-GomOrganization {
 <#
 .Synopsis
     Remove all files & re-initialize a GitHub Org Map to diff changes

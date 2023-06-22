@@ -1,0 +1,2 @@
+function Deploy-GomUser {
+}

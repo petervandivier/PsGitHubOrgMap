@@ -15,12 +15,12 @@
         }
     )
     FunctionsToExport = @(
-        'Import-GomConfiguration'
-        'Initialize-GomConfiguration'
-        'Initialize-GomFolder'
         'Export-GomUsers'
         'Export-GomTeams'
         'Export-GomRepos'
+        'Import-GomConfiguration'
+        'Initialize-GomConfiguration'
+        'Initialize-GomFolder'
         'Sync-GomFolder'
     )
 }

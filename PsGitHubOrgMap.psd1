@@ -25,4 +25,3 @@
         'Sync-GomFolder'
     )
 }
-

@@ -1,14 +1,34 @@
 
 function Import-GomConfiguration {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName='ByProfile')]
     param (
-        [Parameter()]
+        [Parameter(ParameterSetName='ByProfile')]
         [ValidateNotNullOrEmpty()]
         [string]
-        $Name = 'Default'
+        $ProfileName = 'Default',
+
+        [Parameter(ParameterSetName='ByOrganization')]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $OrganizationName
     )
 
-    $GomConfiguration = Get-Content "~/.PsGitHubOrgMap/${Name}.json" | ConvertFrom-Json
+    if($PsCmdlet.ParameterSetName -eq 'ByOrganization'){
+        $ProfileName = (
+            Get-Content $HOME/.PsGitHubOrgMap/Organizations.csv 
+            | ConvertFrom-Csv
+            | Where-Object OrganizationName -eq $OrganizationName
+        ).ProfileName
+        if($null -eq $ProfileName){
+            throw "No profile mapping found in ~/.PsGitHubOrgMap/Organizations.csv for input Organization '$OrganizationName'."
+        }
+    }
+
+    $GomConfiguration = Get-Content "~/.PsGitHubOrgMap/${ProfileName}.json" | ConvertFrom-Json
+
+    if($null -eq $GomConfiguration){
+        throw "Missing or invalid configuration for profile '$ProfileName'."
+    }
 
     $GomConfiguration.Repository.Directory = Resolve-Path $GomConfiguration.Repository.Directory | Get-Item
 

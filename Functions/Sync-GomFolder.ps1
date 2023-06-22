@@ -11,6 +11,11 @@ function Sync-GomFolder {
         $OrganizationName
     )
 
+    if($OrganizationName -ne $GomConfiguration.OrganizationName){
+        Write-Warning "Changing active GitHub Org Map configuration from '$($GomConfiguration.OrganizationName)' to '$($OrganizationName)'."
+        Import-GomConfiguration -OrganizationName $OrganizationName
+    }
+
     Push-Location $GomConfiguration.Repository.Directory
 
     Remove-Item -Recurse Repos/*

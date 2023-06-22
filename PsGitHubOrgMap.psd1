@@ -18,6 +18,7 @@
         'Export-GomUsers'
         'Export-GomTeams'
         'Export-GomRepos'
+        'Get-GomConfiguration'
         'Import-GomConfiguration'
         'Initialize-GomConfiguration'
         'Initialize-GomFolder'

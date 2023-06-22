@@ -2,7 +2,10 @@
 function Import-GomConfiguration {
     [CmdletBinding(DefaultParameterSetName='ByProfile')]
     param (
-        [Parameter(ParameterSetName='ByProfile')]
+        [Parameter(
+            ParameterSetName='ByProfile',
+            Position=0
+        )]
         [ValidateNotNullOrEmpty()]
         [string]
         $ProfileName = 'Default',
@@ -14,13 +17,13 @@ function Import-GomConfiguration {
     )
 
     if($PsCmdlet.ParameterSetName -eq 'ByOrganization'){
-        $ProfileName = (
-            Get-Content $HOME/.PsGitHubOrgMap/Organizations.csv 
-            | ConvertFrom-Csv
-            | Where-Object OrganizationName -eq $OrganizationName
-        ).ProfileName
-        if($null -eq $ProfileName){
+        $OrganizationConfig = Get-Content "$HOME/.PsGitHubOrgMap/Organizations.csv"
+        | ConvertFrom-Csv
+        | Where-Object OrganizationName -eq $OrganizationName
+        if($null -eq $OrganizationConfig){
             throw "No profile mapping found in ~/.PsGitHubOrgMap/Organizations.csv for input Organization '$OrganizationName'."
+        } else {
+            $ProfileName = $OrganizationConfig.ProfileName
         }
     }
 

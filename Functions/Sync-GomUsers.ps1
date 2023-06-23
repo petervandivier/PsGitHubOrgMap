@@ -48,6 +48,8 @@ function Sync-GomUsers {
             Description = "Remove user '$UserName' from organization '$OrganizationName'."
         }
         Write-Verbose "Removing user '$UserName' from organization '$OrganizationName'."
+        # ¿TODO: log something here? Delete response contains no payload
+        # n.b. double-delete attempt throws a reasonably helpful error
         Invoke-GHRestMethod @RemoveUser
     }
 

@@ -42,6 +42,11 @@ function Deploy-GomUser {
             Description = "Invite user '$UserName' to join organization '$OrganizationName'."
         }
         Write-Verbose "Inviting user '$UserName' to join organization '$OrganizationName'."
-        Invoke-GHRestMethod @InviteUser
+        $Invite = Invoke-GHRestMethod @InviteUser
+
+        $Invite.inviter = $Invite.inviter | Select-Object -ExcludeProperty *url, gravatar_id
+        $RepoRoot = $GomConfiguration.Repository.Directory
+        $InvitesDirectory = New-Item -Path "$RepoRoot/Users/Invites" -ItemType Directory -Force
+        $Invite | ConvertTo-Json | Set-Content "${InvitesDirectory}/${UserName}.json" -Force | Out-Null
     }
 }

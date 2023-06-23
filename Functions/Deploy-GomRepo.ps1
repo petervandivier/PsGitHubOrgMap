@@ -17,12 +17,23 @@ function Deploy-GomRepo {
         $RepoName
     )
 
+    $RepoConfig = Get-Content "Repos/${RepoName}.json" | ConvertFrom-Json
+
     $ExistingRepo = Get-GitHubRepository -OwnerName $OrganizationName -RepositoryName $RepoName
 
     if($null -eq $ExistingRepo){
         Write-Verbose "Deploying NEW repository '$RepoName' to organization '$OrganizationName'."
         New-GitHubRepo
     } else {
-        Set-GitHubRepository
+        $ExistingPermissions = Invoke-GHRestMethod -UriFragment "repos/$OrganizationName/$RepoName/teams" -Method Get
+
+        $SyncPerms = @{
+            OrganizationName = $OrganizationName
+            RepoName = $RepoName
+            ConfigPermissions = $RepoConfig.Teams
+            ExistingPermissions = $ExistingPermissions
+        }
+
+        Sync-GomRepositoryTeamPermissions @SyncPerms
     }
 }

@@ -32,8 +32,8 @@ function Deploy-GomUser {
     $InviteUser = @{
         UriFragment = "orgs/$OrganizationName/invitations"
         Method  = 'Post'
-        $Body = @{
-            invitee_id = $UserName
+        Body = @{
+            invitee_id = $User.id
             role = "direct_member"
         } | ConvertTo-Json -Compress
         Description = "Invite user '$UserName' to join organization '$OrganizationName'."

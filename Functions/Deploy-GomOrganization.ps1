@@ -18,10 +18,8 @@ function Deploy-GomOrganization {
 
     Push-Location $GomConfiguration.Repository.Directory
 
-    Get-ChildItem Users/* | ForEach-Object {
-        Deploy-GomUser -OrganizationName $OrganizationName -UserName $_.BaseName
-    }
-    
+    Sync-GomUsers -OrganizationName $OrganizationName
+
     Get-ChildItem Teams/* | ForEach-Object {
         Deploy-GomTeam -OrganizationName $OrganizationName -TeamName $_.BaseName
     }

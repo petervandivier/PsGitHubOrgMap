@@ -15,8 +15,10 @@ function Export-GomUsers {
     Push-Location "$RepoBaseDirectory/Users"
 
     Get-GitHubOrganizationMember -OrganizationName $OrganizationName | ForEach-Object {
+        $UserName = $_.UserName
+
         $UserConfig = [PsCustomObject]@{
-            Name = $_.UserName
+            Name = $UserName
             Id = $_.UserId
         }
 
@@ -28,7 +30,21 @@ function Export-GomUsers {
             $UserConfig | Add-Member -MemberType NoteProperty -Name UserType -Value $_.type
         }
 
-        $UserConfig | ConvertTo-Json | Set-Content "$($_.UserName).json"
+        $OutFile = "${UserName}.json"
+
+        if(Test-Path $OutFile){
+            $NewConfig = $UserConfig | ConvertTo-Json -Compress
+            $CurrentConfig = Get-Content $OutFile | ConvertFrom-Json | ConvertTo-Json -Compress
+            if($NewConfig -eq $CurrentConfig){
+                Write-Verbose "Config file for user '$UserName' is accurate."
+            } else {
+                Write-Verbose "Updating config file for user '$UserName'."
+            }
+        } else {
+            Write-Verbose "Adding new config file for user '$UserName'."
+        }
+
+        $UserConfig | ConvertTo-Json | Set-Content $OutFile
     }
 
     Pop-Location

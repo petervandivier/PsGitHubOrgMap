@@ -12,18 +12,42 @@ function Export-GomTeams {
         $RepoBaseDirectory = "."
     )
 
+    if($OrganizationName -ne $GomConfiguration.OrganizationName){
+        Write-Warning "Changing active GitHub Org Map configuration from '$($GomConfiguration.OrganizationName)' to '$OrganizationName'."
+        Import-GomConfiguration -OrganizationName $OrganizationName
+        $RepoBaseDirectory = $GomConfiguration.Repository.Directory
+    }
+
     Push-Location "$RepoBaseDirectory/Teams"
 
     Get-GitHubTeam -OrganizationName $OrganizationName | ForEach-Object {
-        [string[]]$members = (Get-GitHubTeamMember -OrganizationName $OrganizationName -TeamName $_.TeamName).UserName
+        $TeamName = $_.TeamName
 
-        [PsCustomObject]@{
-            Name = $_.TeamName
+        [string[]]$members = (Get-GitHubTeamMember -OrganizationName $OrganizationName -TeamName $TeamName).UserName
+
+        $TeamConfig = [PsCustomObject]@{
+            Name = $TeamName
             Id = $_.TeamId
             Description = $_.Description
             Privacy = $_.privacy
             Members = $members
-        } | ConvertTo-Json | Set-Content "$($_.TeamName).json"
+        }
+
+        $OutFile = "${TeamName}.json"
+
+        if(Test-Path $OutFile){
+            $NewConfig = $TeamConfig | ConvertTo-Json -Compress
+            $CurrentConfig = Get-Content $OutFile | ConvertFrom-Json | ConvertTo-Json -Compress
+            if($NewConfig -eq $CurrentConfig){
+                Write-Verbose "Config file for user '$TeamName' is accurate."
+            } else {
+                Write-Verbose "Updating config file for team '$TeamName'."
+            }
+        } else {
+            Write-Verbose "Adding new config file for team '$TeamName'."
+        }
+
+        $TeamConfig | ConvertTo-Json | Set-Content $OutFile
     }
 
     Pop-Location

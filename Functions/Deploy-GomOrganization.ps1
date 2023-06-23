@@ -23,7 +23,7 @@ function Deploy-GomOrganization {
     Get-ChildItem Teams/* | ForEach-Object {
         Deploy-GomTeam -OrganizationName $OrganizationName -TeamName $_.BaseName
     }
-    
+
     Get-ChildItem Repos/* | ForEach-Object {
         Deploy-GomRepo -OrganizationName $OrganizationName -RepoName $_.BaseName
     }

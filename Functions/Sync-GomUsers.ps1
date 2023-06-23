@@ -37,7 +37,6 @@ function Sync-GomUsers {
         }
     }
 
-
     $ExistingUsers | Where-Object {
         $_.login -NotIn $ConfigUsers.Name
     } | ForEach-Object {
@@ -48,6 +47,7 @@ function Sync-GomUsers {
             Method  = 'Delete'
             Description = "Remove user '$UserName' from organization '$OrganizationName'."
         }
+        Write-Verbose "Removing user '$UserName' from organization '$OrganizationName'."
         Invoke-GHRestMethod @RemoveUser
     }
 

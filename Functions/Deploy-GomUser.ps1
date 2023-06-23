@@ -29,18 +29,19 @@ function Deploy-GomUser {
     if($IsMember){
         Write-Verbose "User '$UserName' is already a member of Organization '$OrganizationName'."
         return
+    } else {
+        # TODO: add support for add-as-admin/billing manager
+        # TODO: add teams
+        $InviteUser = @{
+            UriFragment = "orgs/$OrganizationName/invitations"
+            Method  = 'Post'
+            Body = @{
+                invitee_id = $User.id
+                role = "direct_member"
+            } | ConvertTo-Json -Compress
+            Description = "Invite user '$UserName' to join organization '$OrganizationName'."
+        }
+        Write-Verbose "Inviting user '$UserName' to join organization '$OrganizationName'."
+        Invoke-GHRestMethod @InviteUser
     }
-
-    # TODO: add support for add-as-admin/billing manager
-    # TODO: add teams
-    $InviteUser = @{
-        UriFragment = "orgs/$OrganizationName/invitations"
-        Method  = 'Post'
-        Body = @{
-            invitee_id = $User.id
-            role = "direct_member"
-        } | ConvertTo-Json -Compress
-        Description = "Invite user '$UserName' to join organization '$OrganizationName'."
-    }
-    Invoke-GHRestMethod @InviteUser
 }

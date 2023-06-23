@@ -1,5 +1,10 @@
 function Deploy-GomUser {
 <#
+.Synopsis
+    Invite a user to an organization.
+.Description
+    Note: an invite is idempotent. Attempting to re-sending the same invite multiple times
+    should have no adverse affect.
 .Link
     https://docs.github.com/en/rest/orgs/members?apiVersion=2022-11-28#create-an-organization-invitation
 #>
@@ -26,7 +31,6 @@ function Deploy-GomUser {
         return
     }
 
-    # TODO: test & handle for double-invite
     # TODO: add support for add-as-admin/billing manager
     # TODO: add teams
     $InviteUser = @{

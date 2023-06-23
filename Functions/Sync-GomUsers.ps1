@@ -31,7 +31,7 @@ function Sync-GomUsers {
         $UserName = $User.Name
         if($UserName -NotIn $ExistingUsers.login){
             Write-Verbose "Adding user '$UserName' to Organization '$OrganizationName'."
-            Deploy-GomUser -OrganizationName $OrganizationName -UserName $_.BaseName
+            Deploy-GomUser -OrganizationName $OrganizationName -UserName $UserName
         } else{
             Write-Verbose "User '$UserName' already exists in Organization '$OrganizationName'."
         }

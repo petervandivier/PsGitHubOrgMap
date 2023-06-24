@@ -23,7 +23,9 @@ function Export-GomTeams {
     Get-GitHubTeam -OrganizationName $OrganizationName | ForEach-Object {
         $TeamName = $_.TeamName
 
-        [string[]]$members = (Get-GitHubTeamMember -OrganizationName $OrganizationName -TeamName $TeamName).UserName
+        [string[]]$members = (
+            Get-GitHubTeamMember -OrganizationName $OrganizationName -TeamName $TeamName
+        ).UserName | Sort-Object
 
         $TeamConfig = [PsCustomObject]@{
             Name = $TeamName

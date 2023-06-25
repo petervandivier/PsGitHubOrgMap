@@ -27,6 +27,7 @@
         'Import-GomConfiguration'
         'Initialize-GomConfiguration'
         'Initialize-GomFolder'
+        'Sync-GomTeams'
         'Sync-GomUsers'
     )
 }

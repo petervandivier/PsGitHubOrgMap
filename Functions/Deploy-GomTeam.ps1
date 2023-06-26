@@ -3,8 +3,9 @@ function Deploy-GomTeam {
 .Synopsis
     Create a team & add users. If the team alreasy exists, update membership to match.
 .Description
-    Team membership is managed via a different endpoint than team attribute management. 
+    Team membership is managed via a different endpoint than team attribute management.
     This function allows you to manage a team's attributes & membership via a single call.
+    TeamName & TeamSlug are expected to be immutable for the purposes of this function.
 .Link
     https://docs.github.com/en/rest/teams/members?apiVersion=2022-11-28#add-or-update-team-membership-for-a-user
 .Link
@@ -38,7 +39,8 @@ function Deploy-GomTeam {
         Description = $Description
         Privacy = $Privacy
     }
-    $Team = Get-GitHubTeam -OrganizationName $OrganizationName -TeamName $TeamName
+    $Team = Get-GitHubTeam -OrganizationName $OrganizationName -TeamName $TeamName -ErrorAction SilentlyContinue
+    $TeamSlug = $Team.TeamSlug
     if($null -eq $Team){
         Write-Verbose "Adding new team '$TeamName' to organization '$OrganizationName'."
         $Team = New-GitHubTeam @TeamSettings
@@ -80,20 +82,21 @@ function Deploy-GomTeam {
         $ExistingMembers = (Get-GitHubTeamMember -OrganizationName $OrganizationName -TeamName $TeamName).login | Sort-Object
         $MembershipDelta = Compare-Object -Reference $ExistingMembers -Difference $Members -IncludeEqual
         $MembershipDelta | ForEach-Object {
+            $UserName = $_.InputObject
             switch ($_.SideIndicator) {
-                '<=' { 
+                '=>' { 
                     Write-Verbose "Adding user '$UserName' to team '$TeamName' in organization '$OrganizationName'."
                     $AddUserToTeam = @{
                         Method = 'Put'
-                        UriFragment = "orgs/$OrganizationName/teams/$($Team.TeamSlug)/$UserName"
+                        UriFragment = "orgs/$OrganizationName/teams/$TeamSlug/memberships/$UserName"
                     }
                     Invoke-GHRestMethod @AddUserToTeam
                  }
-                '=>' { 
+                '<=' { 
                     Write-Verbose "Removing user '$UserName' from team '$TeamName' in organization '$OrganizationName'."
                     $AddUserToTeam = @{
                         Method = 'Delete'
-                        UriFragment = "orgs/$OrganizationName/teams/$($Team.TeamSlug)/$UserName"
+                        UriFragment = "orgs/$OrganizationName/teams/$TeamSlug/memberships/$UserName"
                     }
                     Invoke-GHRestMethod @AddUserToTeam
                 }

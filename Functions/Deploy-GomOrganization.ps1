@@ -20,9 +20,7 @@ function Deploy-GomOrganization {
 
     Sync-GomUsers -OrganizationName $OrganizationName
 
-    Get-ChildItem Teams/* | ForEach-Object {
-        Deploy-GomTeam -OrganizationName $OrganizationName -TeamName $_.BaseName
-    }
+    Sync-GomTeams -OrganizationName $OrganizationName
 
     Get-ChildItem Repos/* | ForEach-Object {
         Deploy-GomRepo -OrganizationName $OrganizationName -RepoName $_.BaseName

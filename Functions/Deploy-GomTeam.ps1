@@ -46,17 +46,10 @@ function Deploy-GomTeam {
         $Team = New-GitHubTeam @TeamSettings
         $TeamSlug = $Team.TeamSlug
         foreach($UserName in $Members) {
-            $IsMember = Test-GitHubOrganizationMember -OrganizationName $OrganizationName -UserName $UserName
-            if($IsMember){
-                Write-Verbose "Adding user '$UserName' to team '$TeamName' in organization '$OrganizationName'."
-                $AddUserToTeam = @{
-                    Method = 'Put'
-                    UriFragment = "orgs/$OrganizationName/teams/$TeamSlug/memberships/$UserName"
-                }
-                Invoke-GHRestMethod @AddUserToTeam
-            } else {
-                Write-Error "User '$UserName' is not a member of organization '$OrganizationName' so they cannot be added to team '$TeamName'."
-            }
+            Add-GomTeamMember `
+                -OrganizationName $OrganizationName `
+                -TeamName $TeamName `
+                -UserName $UserName
         }
         Write-Verbose "Team '$TeamName' created in organization '$OrganizationName'. Exporting Id number to config."
         Export-GomTeams -OrganizationName $OrganizationName -TeamName $TeamName
@@ -90,19 +83,18 @@ function Deploy-GomTeam {
             switch ($_.SideIndicator) {
                 '=>' { 
                     Write-Verbose "Adding user '$UserName' to team '$TeamName' in organization '$OrganizationName'."
-                    $AddUserToTeam = @{
-                        Method = 'Put'
-                        UriFragment = "orgs/$OrganizationName/teams/$TeamSlug/memberships/$UserName"
-                    }
-                    Invoke-GHRestMethod @AddUserToTeam
+                    Add-GomTeamMember `
+                        -OrganizationName $OrganizationName `
+                        -TeamName $TeamName `
+                        -UserName $UserName
                  }
                 '<=' { 
                     Write-Verbose "Removing user '$UserName' from team '$TeamName' in organization '$OrganizationName'."
-                    $AddUserToTeam = @{
+                    $RmUserFromTeam = @{
                         Method = 'Delete'
                         UriFragment = "orgs/$OrganizationName/teams/$TeamSlug/memberships/$UserName"
                     }
-                    Invoke-GHRestMethod @AddUserToTeam
+                    Invoke-GHRestMethod @RmUserFromTeam
                 }
                 '==' {
                     Write-Verbose "User '$UserName' is already a member of team '$TeamName'. No action taken."

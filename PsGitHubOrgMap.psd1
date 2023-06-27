@@ -15,6 +15,7 @@
         }
     )
     FunctionsToExport = @(
+        'Add-GomTeamMember'
         'Deploy-GomOrganization'
         'Deploy-GomRepo'
         'Deploy-GomTeam'

@@ -16,15 +16,18 @@ function Export-GomOrganization {
         Import-GomConfiguration -OrganizationName $OrganizationName
     }
 
-    Push-Location $GomConfiguration.Repository.Directory
+    $RepoRoot = Resolve-Path $GomConfiguration.Repository.Directory
 
-    Remove-Item -Recurse Repos/*
+    Push-Location $RepoRoot
+
+    # TODO: do not nuke these directories. Instead, do a per-file delete as needed
+    Remove-Item -Recurse "$RepoRoot/Repos/*.json"
     Export-GomRepo -OrganizationName $OrganizationName
 
-    Remove-Item -Recurse Teams/*
+    Remove-Item -Recurse "$RepoRoot/Teams/*.json"
     Export-GomTeam -OrganizationName $OrganizationName
 
-    Remove-Item -Recurse Users/*
+    Remove-Item -Recurse "$RepoRoot/Users/*.json"
     Export-GomUser -OrganizationName $OrganizationName
 
     Pop-Location

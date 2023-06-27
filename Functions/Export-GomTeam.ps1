@@ -15,11 +15,11 @@ function Export-GomTeam {
         Import-GomConfiguration -OrganizationName $OrganizationName
     }
 
-    $RepoBaseDirectory = $GomConfiguration.Repository.Directory
+    $RepoRoot = $GomConfiguration.Repository.Directory
 
     $Teams = Get-GitHubTeam -OrganizationName $OrganizationName 
 
-    if($null -ne $TeamName){
+    if($PSBoundParameters.ContainsKey('TeamName')){
         Write-Verbose "Exporting single team: '$TeamName'."
         $Teams = $Teams | Where-Object name -eq $TeamName
         if($null -eq $Team){
@@ -42,7 +42,7 @@ function Export-GomTeam {
             Members = $members
         }
 
-        $OutFile = "${RepoBaseDirectory}/Teams/${TeamName}.json"
+        $OutFile = "${RepoRoot}/Teams/${TeamName}.json"
 
         if(Test-Path $OutFile){
             $NewConfig = $TeamConfig | ConvertTo-Json -Compress

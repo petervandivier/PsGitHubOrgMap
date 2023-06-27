@@ -4,15 +4,15 @@ function Export-GomUser {
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [string]
-        $OrganizationName,
-
-        [Parameter()]
-        [ValidateScript({Test-Path $_})]
-        [string]
-        $RepoBaseDirectory = "."
+        $OrganizationName
     )
 
-    Push-Location "$RepoBaseDirectory/Users"
+    if($OrganizationName -ne $GomConfiguration.OrganizationName){
+        Write-Warning "Changing active GitHub Org Map configuration from '$($GomConfiguration.OrganizationName)' to '$OrganizationName'."
+        Import-GomConfiguration -OrganizationName $OrganizationName
+    }
+
+    $RepoRoot = $GomConfiguration.Repository.Directory
 
     Get-GitHubOrganizationMember -OrganizationName $OrganizationName | ForEach-Object {
         $UserName = $_.UserName
@@ -30,7 +30,7 @@ function Export-GomUser {
             $UserConfig | Add-Member -MemberType NoteProperty -Name UserType -Value $_.type
         }
 
-        $OutFile = "${UserName}.json"
+        $OutFile = "${RepoRoot}/Users/${UserName}.json"
 
         if(Test-Path $OutFile){
             $NewConfig = $UserConfig | ConvertTo-Json -Compress
@@ -46,6 +46,4 @@ function Export-GomUser {
 
         $UserConfig | ConvertTo-Json | Set-Content $OutFile
     }
-
-    Pop-Location
 }

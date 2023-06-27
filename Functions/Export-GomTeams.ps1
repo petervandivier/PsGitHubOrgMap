@@ -6,21 +6,28 @@ function Export-GomTeams {
         [string]
         $OrganizationName,
 
-        [Parameter()]
-        [ValidateScript({Test-Path $_})]
         [string]
-        $RepoBaseDirectory = "."
+        $TeamName
     )
 
     if($OrganizationName -ne $GomConfiguration.OrganizationName){
         Write-Warning "Changing active GitHub Org Map configuration from '$($GomConfiguration.OrganizationName)' to '$OrganizationName'."
         Import-GomConfiguration -OrganizationName $OrganizationName
-        $RepoBaseDirectory = $GomConfiguration.Repository.Directory
     }
 
-    Push-Location "$RepoBaseDirectory/Teams"
+    $RepoBaseDirectory = $GomConfiguration.Repository.Directory
 
-    Get-GitHubTeam -OrganizationName $OrganizationName | ForEach-Object {
+    $Teams = Get-GitHubTeam -OrganizationName $OrganizationName 
+
+    if($null -ne $TeamName){
+        Write-Verbose "Exporting single team: '$TeamName'."
+        $Teams = $Teams | Where-Object name -eq $TeamName
+        if($null -eq $Team){
+            throw "No existing team found with name '$TeamName' in organization '$OrganizationName'."
+        }
+    }
+
+    $Teams | ForEach-Object {
         $TeamName = $_.TeamName
 
         [string[]]$members = (
@@ -35,7 +42,7 @@ function Export-GomTeams {
             Members = $members
         }
 
-        $OutFile = "${TeamName}.json"
+        $OutFile = "${RepoBaseDirectory}/Teams/${TeamName}.json"
 
         if(Test-Path $OutFile){
             $NewConfig = $TeamConfig | ConvertTo-Json -Compress
@@ -51,6 +58,4 @@ function Export-GomTeams {
 
         $TeamConfig | ConvertTo-Json | Set-Content $OutFile
     }
-
-    Pop-Location
 }

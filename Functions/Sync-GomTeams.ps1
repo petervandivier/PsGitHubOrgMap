@@ -16,33 +16,25 @@ function Sync-GomTeams {
         Import-GomConfiguration -OrganizationName $OrganizationName
     }
 
-    Push-Location $GomConfiguration.Repository.Directory
+    $RepoRoot = Resolve-Path $GomConfiguration.Repository.Directory
 
     $ExistingTeams = Get-GitHubTeam -OrganizationName $OrganizationName
-    $ConfigTeams = Get-ChildItem "Teams/*.json" | ForEach-Object {
-        Get-Content $_.FullName | ConvertFrom-Json
+    $ConfigTeams = Get-ChildItem "$RepoRoot/Teams/*.json" | ForEach-Object {
+        Get-Content $_ | ConvertFrom-Json
     }
 
     foreach($Team in $ConfigTeams){
-        $TeamName = $Team.Name
-        $ExistingTeam = $ExistingTeams | Where-Object name -eq $TeamName
-        if($null -eq $ExistingTeam){
-            Write-Verbose "Adding team '$TeamName' to ozrganization '$OrganizationName'."
-        } else {
-            Write-Verbose "Deploying exist team '$TeamName' in organization '$OrganizationName'."
-        }
         Deploy-GomTeam `
             -OrganizationName $OrganizationName `
-            -TeamName $TeamName `
+            -TeamName $Team.Name `
             -Description $Team.Description `
             -Privacy $Team.Privacy `
             -Members $Team.Members
     }
 
     $ExistingTeams | Where-Object name -NotIn $ConfigTeams.Name | ForEach-Object {
+        $TeamName = $_.TeamName
         Write-Verbose "Deleting team '$TeamName' from organization '$OrganizationName'."
         Remove-GitHubTeam -OrganizationName $OrganizationName -TeamName $TeamName
     }
-
-    Pop-Location
 }

@@ -39,24 +39,27 @@ function Deploy-GomTeam {
         Description = $Description
         Privacy = $Privacy
     }
-    $Team = Get-GitHubTeam -OrganizationName $OrganizationName -TeamName $TeamName -ErrorAction SilentlyContinue
-    $TeamSlug = $Team.TeamSlug
+    $Team = Get-GitHubTeam -OrganizationName $OrganizationName 
+    | Where-Object TeamName -eq $TeamName 
     if($null -eq $Team){
         Write-Verbose "Adding new team '$TeamName' to organization '$OrganizationName'."
         $Team = New-GitHubTeam @TeamSettings
+        $TeamSlug = $Team.TeamSlug
         foreach($UserName in $Members) {
             $IsMember = Test-GitHubOrganizationMember -OrganizationName $OrganizationName -UserName $UserName
             if($IsMember){
-                Write-Verbose "Adding member '$UserName' to team '$TeamName' in organization '$OrganizationName'."
+                Write-Verbose "Adding user '$UserName' to team '$TeamName' in organization '$OrganizationName'."
                 $AddUserToTeam = @{
                     Method = 'Put'
-                    UriFragment = "orgs/$OrganizationName/teams/$($Team.TeamSlug)/$UserName"
+                    UriFragment = "orgs/$OrganizationName/teams/$TeamSlug/memberships/$UserName"
                 }
                 Invoke-GHRestMethod @AddUserToTeam
             } else {
                 Write-Error "User '$UserName' is not a member of organization '$OrganizationName' so they cannot be added to team '$TeamName'."
             }
         }
+        Write-Verbose "Team '$TeamName' created in organization '$OrganizationName'. Exporting Id number to config."
+        Export-GomTeams -OrganizationName $OrganizationName -TeamName $TeamName
         return
     } else {
         $UpdateNeeded = $false
@@ -78,6 +81,7 @@ function Deploy-GomTeam {
         } else {
             Write-Verbose "Deployment state for team '$TeamName' matches config. No action needed."
         }
+        $TeamSlug = $Team.TeamSlug
         $Members = $Members | Sort-Object
         $ExistingMembers = (Get-GitHubTeamMember -OrganizationName $OrganizationName -TeamName $TeamName).login | Sort-Object
         $MembershipDelta = Compare-Object -Reference $ExistingMembers -Difference $Members -IncludeEqual

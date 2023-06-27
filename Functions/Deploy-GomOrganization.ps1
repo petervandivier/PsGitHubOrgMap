@@ -1,7 +1,7 @@
 function Deploy-GomOrganization {
 <#
 .Synopsis
-    From an on-disk repo, deploy assets to an existing org.
+    From a directory of config files, provision assets in an existing GitHub org.
 #>
     [CmdletBinding()]
     param (
@@ -12,23 +12,19 @@ function Deploy-GomOrganization {
     )
 
     if($OrganizationName -ne $GomConfiguration.OrganizationName){
-        Write-Warning "Changing active GitHub Org Map configuration from '$($GomConfiguration.OrganizationName)' to '$($OrganizationName)'."
+        Write-Warning "Changing active GitHub Org Map configuration from '$($GomConfiguration.OrganizationName)' to '$OrganizationName'."
         Import-GomConfiguration -OrganizationName $OrganizationName
     }
 
-    Push-Location $GomConfiguration.Repository.Directory
+    $RepoRoot = Resolve-Path $GomConfiguration.Repository.Directory
 
-    Get-ChildItem Users/* | ForEach-Object {
-        Deploy-GomUser -OrganizationName $OrganizationName -UserName $_.BaseName
-    }
-    
-    Get-ChildItem Teams/* | ForEach-Object {
-        Deploy-GomTeam -OrganizationName $OrganizationName -TeamName $_.BaseName
-    }
-    
-    Get-ChildItem Repos/* | ForEach-Object {
-        Deploy-GomRepo -OrganizationName $OrganizationName -RepoName $_.BaseName
-    }
+    Write-Verbose "Deploying assets for organization '$OrganizationName' from directory '$RepoRoot'."
+    Write-Verbose "Synchronizing users for organization '$OrganizationName'."
+    Sync-GomUser -OrganizationName $OrganizationName
 
-    Pop-Location
+    Write-Verbose "Synchronizing teams for organization '$OrganizationName'."
+    Sync-GomTeam -OrganizationName $OrganizationName
+
+    Write-Verbose "Synchronizing repositories for organization '$OrganizationName'."
+    Sync-GomRepo -OrganizationName $OrganizationName
 }

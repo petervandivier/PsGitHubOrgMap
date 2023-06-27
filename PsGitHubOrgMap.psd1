@@ -2,7 +2,7 @@
 # Generated on: 2023-05-17
 @{
     RootModule = 'PsGitHubOrgMap.psm1'
-    ModuleVersion = '0.0.1'
+    ModuleVersion = '0.0.2'
     GUID = '069bfbf7-4926-48f9-b626-3829fdae9fe7'
     Author = 'Peter.Vandivier'
     Copyright = '(c) Peter.Vandivier. All rights reserved.'
@@ -15,17 +15,21 @@
         }
     )
     FunctionsToExport = @(
+        'Add-GomTeamMember'
         'Deploy-GomOrganization'
         'Deploy-GomRepo'
         'Deploy-GomTeam'
         'Deploy-GomUser'
-        'Export-GomRepos'
-        'Export-GomTeams'
-        'Export-GomUsers'
+        'Export-GomOrganization'
+        'Export-GomRepo'
+        'Export-GomTeam'
+        'Export-GomUser'
         'Get-GomConfiguration'
         'Import-GomConfiguration'
         'Initialize-GomConfiguration'
         'Initialize-GomFolder'
-        'Sync-GomFolder'
+        'Sync-GomTeam'
+        'Sync-GomUser'
+        'Sync-GomRepo'
     )
 }

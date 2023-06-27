@@ -1,18 +1,18 @@
-function Export-GomRepos {
+function Export-GomRepo {
     [CmdletBinding()]
     param (
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [string]
-        $OrganizationName,
-
-        [Parameter()]
-        [ValidateScript({Test-Path $_})]
-        [string]
-        $RepoBaseDirectory = "."
+        $OrganizationName
     )
 
-    Push-Location "$RepoBaseDirectory/Repos"
+    if($OrganizationName -ne $GomConfiguration.OrganizationName){
+        Write-Warning "Changing active GitHub Org Map configuration from '$($GomConfiguration.OrganizationName)' to '$OrganizationName'."
+        Import-GomConfiguration -OrganizationName $OrganizationName
+    }
+
+    $RepoBaseDirectory = Resolve-Path $GomConfiguration.Repository.Directory
 
     Get-GitHubRepository -OrganizationName $OrganizationName | ForEach-Object {
         $repoName = $_.name
@@ -37,7 +37,8 @@ function Export-GomRepos {
             $repo | Add-Member -MemberType NoteProperty -Name Teams -Value $teams
         }
 
-        $repo | ConvertTo-Json -Depth 5 | Set-Content "${repoName}.json"
+        Write-Verbose "Adding new config file for repo '$repoName'."
+        $repo | ConvertTo-Json -Depth 5 | Set-Content "$RepoBaseDirectory/Repos/${repoName}.json"
     }
 
     Pop-Location

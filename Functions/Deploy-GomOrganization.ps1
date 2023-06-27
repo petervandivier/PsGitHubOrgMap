@@ -1,7 +1,7 @@
 function Deploy-GomOrganization {
 <#
 .Synopsis
-    From an on-disk repo, deploy assets to an existing org.
+    From a directory of config files, provision assets in an existing GitHub org.
 #>
     [CmdletBinding()]
     param (
@@ -11,20 +11,9 @@ function Deploy-GomOrganization {
         $OrganizationName
     )
 
-    if($OrganizationName -ne $GomConfiguration.OrganizationName){
-        Write-Warning "Changing active GitHub Org Map configuration from '$($GomConfiguration.OrganizationName)' to '$OrganizationName'."
-        Import-GomConfiguration -OrganizationName $OrganizationName
-    }
-
-    Push-Location $GomConfiguration.Repository.Directory
-
     Sync-GomUser -OrganizationName $OrganizationName
 
     Sync-GomTeam -OrganizationName $OrganizationName
 
-    Get-ChildItem Repos/* | ForEach-Object {
-        Deploy-GomRepo -OrganizationName $OrganizationName -RepoName $_.BaseName
-    }
-
-    Pop-Location
+    Sync-GomRepo -OrganizationName $OrganizationName
 }

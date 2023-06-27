@@ -19,13 +19,13 @@ function Export-GomOrganization {
     Push-Location $GomConfiguration.Repository.Directory
 
     Remove-Item -Recurse Repos/*
-    Export-GomRepos -OrganizationName $OrganizationName
+    Export-GomRepo -OrganizationName $OrganizationName
 
     Remove-Item -Recurse Teams/*
-    Export-GomTeams -OrganizationName $OrganizationName
+    Export-GomTeam -OrganizationName $OrganizationName
 
     Remove-Item -Recurse Users/*
-    Export-GomUsers -OrganizationName $OrganizationName
+    Export-GomUser -OrganizationName $OrganizationName
 
     Pop-Location
 }

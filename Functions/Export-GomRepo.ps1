@@ -1,4 +1,4 @@
-function Export-GomRepos {
+function Export-GomRepo {
     [CmdletBinding()]
     param (
         [Parameter()]

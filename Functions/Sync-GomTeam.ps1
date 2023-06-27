@@ -1,4 +1,4 @@
-function Sync-GomTeams {
+function Sync-GomTeam {
 <#
 .Synopsis
     From an on-disk repo, deploy teams to an existing org. Delete teams not defined in config.

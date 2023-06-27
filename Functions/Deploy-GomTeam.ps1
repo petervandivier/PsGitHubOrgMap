@@ -52,7 +52,7 @@ function Deploy-GomTeam {
                 -UserName $UserName
         }
         Write-Verbose "Team '$TeamName' created in organization '$OrganizationName'. Exporting Id number to config."
-        Export-GomTeams -OrganizationName $OrganizationName -TeamName $TeamName
+        Export-GomTeam -OrganizationName $OrganizationName -TeamName $TeamName
         return
     } else {
         $UpdateNeeded = $false

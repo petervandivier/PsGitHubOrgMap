@@ -1,4 +1,4 @@
-function Sync-GomRepositoryTeamPermissions {
+function Sync-GomRepositoryTeamPermission {
     [CmdletBinding(SupportsShouldProcess)]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
         'PSShouldProcess', 

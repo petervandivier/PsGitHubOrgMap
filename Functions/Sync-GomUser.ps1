@@ -1,4 +1,4 @@
-function Sync-GomUsers {
+function Sync-GomUser {
 <#
 .Link
     https://docs.github.com/en/rest/orgs/members?apiVersion=2022-11-28#remove-an-organization-member

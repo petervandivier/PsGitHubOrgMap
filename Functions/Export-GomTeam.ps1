@@ -1,4 +1,4 @@
-function Export-GomTeams {
+function Export-GomTeam {
     [CmdletBinding()]
     param (
         [Parameter()]

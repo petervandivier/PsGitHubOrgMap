@@ -1,4 +1,4 @@
-function Export-GomUsers {
+function Export-GomUser {
     [CmdletBinding()]
     param (
         [Parameter()]

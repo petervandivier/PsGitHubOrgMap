@@ -34,6 +34,6 @@ function Deploy-GomRepo {
             ExistingPermissions = $ExistingPermissions
         }
 
-        Sync-GomRepositoryTeamPermissions @SyncPerms
+        Sync-GomRepositoryTeamPermission @SyncPerms
     }
 }

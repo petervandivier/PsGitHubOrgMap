@@ -1,7 +1,7 @@
 function Sync-GomTeam {
 <#
 .Synopsis
-    From an on-disk repo, deploy teams to an existing org. Delete teams not defined in config.
+    From a directory of config files, deploy teams to an existing GitHub org. Delete teams not defined in config.
 #>
     [CmdletBinding()]
     param (

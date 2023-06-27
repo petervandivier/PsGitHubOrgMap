@@ -30,5 +30,6 @@
         'Initialize-GomFolder'
         'Sync-GomTeam'
         'Sync-GomUser'
+        'Sync-GomRepo'
     )
 }

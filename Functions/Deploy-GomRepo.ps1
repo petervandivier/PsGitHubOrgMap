@@ -17,23 +17,35 @@ function Deploy-GomRepo {
         $RepoName
     )
 
-    $RepoConfig = Get-Content "Repos/${RepoName}.json" | ConvertFrom-Json
+    if($OrganizationName -ne $GomConfiguration.OrganizationName){
+        Write-Warning "Changing active GitHub Org Map configuration from '$($GomConfiguration.OrganizationName)' to '$OrganizationName'."
+        Import-GomConfiguration -OrganizationName $OrganizationName
+    }
+    
+    $RepoRoot = Resolve-Path $GomConfiguration.Repository.Directory
 
-    $ExistingRepo = Get-GitHubRepository -OwnerName $OrganizationName -RepositoryName $RepoName
+    $RepoConfig = Get-Content "${RepoRoot}/Repos/${RepoName}.json" | ConvertFrom-Json
+
+    $ExistingRepo = Get-GitHubRepository -OwnerName $OrganizationName -RepositoryName $RepoName -ErrorAction SilentlyContinue
 
     if($null -eq $ExistingRepo){
         Write-Verbose "Deploying NEW repository '$RepoName' to organization '$OrganizationName'."
-        New-GitHubRepo
+        New-GitHubRepository -OrganizationName $OrganizationName -RepositoryName $RepoName
     } else {
         $ExistingPermissions = Invoke-GHRestMethod -UriFragment "repos/$OrganizationName/$RepoName/teams" -Method Get
 
-        $SyncPerms = @{
-            OrganizationName = $OrganizationName
-            RepoName = $RepoName
-            ConfigPermissions = $RepoConfig.Teams
-            ExistingPermissions = $ExistingPermissions
+        if(
+           $null -eq $RepoConfig.Teams -and
+           $null -eq $ExistingPermissions
+        ){
+            Write-Verbose "No permissions found in config or deployment for repo '$RepoName'."
+        } else {
+            Write-Verbose "Synchronizing permissions for repo '$RepoName'."
+            Sync-GomRepositoryTeamPermission `
+                -OrganizationName $OrganizationName `
+                -RepoName $RepoName `
+                -ConfigPermissions $RepoConfig.Teams `
+                -ExistingPermissions $ExistingPermissions
         }
-
-        Sync-GomRepositoryTeamPermission @SyncPerms
     }
 }

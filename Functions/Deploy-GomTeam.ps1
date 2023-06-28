@@ -77,7 +77,7 @@ function Deploy-GomTeam {
         $TeamSlug = $Team.TeamSlug
         $Members = $Members | Sort-Object
         $ExistingMembers = (Get-GitHubTeamMember -OrganizationName $OrganizationName -TeamName $TeamName).login | Sort-Object
-        $MembershipDelta = Compare-Object -Reference $ExistingMembers -Difference $Members -IncludeEqual
+        $MembershipDelta = Compare-Object -ReferenceObject $ExistingMembers -DifferenceObject $Members -IncludeEqual
         $MembershipDelta | ForEach-Object {
             $UserName = $_.InputObject
             switch ($_.SideIndicator) {

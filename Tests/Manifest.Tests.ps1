@@ -12,6 +12,6 @@ BeforeAll {
 
 Describe "The manifest file" {
     It "Should list FunctionsToExport alphabetically." {
-        Compare-Object -Reference $control -Difference $test | Should -BeNullOrEmpty
+        Compare-Object -ReferenceObject $control -DifferenceObject $test | Should -BeNullOrEmpty
     }
 }

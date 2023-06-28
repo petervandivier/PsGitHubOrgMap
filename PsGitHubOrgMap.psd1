@@ -7,7 +7,6 @@
     Author = 'Peter.Vandivier'
     Copyright = '(c) Peter.Vandivier. All rights reserved.'
     Description = 'For a given GitHub Org, dump the membership & repository configuration to the filesystem'
-    CompatiblePSEditions = @('Core')
     RequiredModules = @(
         @{
             ModuleName = 'PowerShellForGitHub'

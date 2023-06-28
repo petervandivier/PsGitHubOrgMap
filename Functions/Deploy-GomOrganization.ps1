@@ -3,7 +3,12 @@ function Deploy-GomOrganization {
 .Synopsis
     From a directory of config files, provision assets in an existing GitHub org.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSShouldProcess',
+        '',
+        Justification = "Just passing the `-WhatIf` var through to child calls."
+    )]
     param (
         [Parameter()]
         [ValidateNotNullOrEmpty()]

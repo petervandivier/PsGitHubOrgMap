@@ -3,7 +3,7 @@ function Sync-GomRepo {
 .Synopsis
     From a directory of config files, deploy repositories to an existing org. Delete repos not defined in config.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -33,6 +33,9 @@ function Sync-GomRepo {
     $ExistingRepos | Where-Object name -NotIn $ConfigRepos.Name | ForEach-Object {
         $RepoName = $_.name
         Write-Verbose "Deleting Repo '$RepoName' from organization '$OrganizationName'."
-        Remove-GitHubRepository -OwnerName $OrganizationName -RepositoryName $RepoName
+        Remove-GitHubRepository `
+            -OwnerName $OrganizationName `
+            -RepositoryName $RepoName `
+            -Confirm:$ConfirmPreference
     }
 }

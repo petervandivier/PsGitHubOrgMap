@@ -2,7 +2,7 @@
 # Generated on: 2023-05-17
 @{
     RootModule = 'PsGitHubOrgMap.psm1'
-    ModuleVersion = '0.0.2'
+    ModuleVersion = '0.0.3'
     GUID = '069bfbf7-4926-48f9-b626-3829fdae9fe7'
     Author = 'Peter.Vandivier'
     Copyright = '(c) Peter.Vandivier. All rights reserved.'

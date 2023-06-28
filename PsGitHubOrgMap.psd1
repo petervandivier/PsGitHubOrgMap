@@ -7,6 +7,7 @@
     Author = 'Peter.Vandivier'
     Copyright = '(c) Peter.Vandivier. All rights reserved.'
     Description = 'For a given GitHub Org, dump the membership & repository configuration to the filesystem'
+    CompatiblePSEditions = @('Core')
     RequiredModules = @(
         @{
             ModuleName = 'PowerShellForGitHub'
@@ -32,4 +33,10 @@
         'Sync-GomTeam'
         'Sync-GomUser'
     )
+    PrivateData = @{
+        PSData = @{
+            ProjectUri = 'https://github.com/petervandivier/PsGitHubOrgMap'
+            LicenseUri = 'https://opensource.org/licenses/MIT'
+        }
+    }
 }

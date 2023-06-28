@@ -5,13 +5,13 @@
 )]Param()
 
 BeforeAll {
-    $manifest =  Import-PowershellDataFile $PsScriptRoot/../PsGitHubOrgMap.psd1
+    $manifest = Import-PowershellDataFile $PsScriptRoot/../PsGitHubOrgMap.psd1
     $control = ($manifest.FunctionsToExport) -join "`n"
     $test = ($manifest.FunctionsToExport | Sort-Object) -join "`n"
 }
 
 Describe "The manifest file" {
     It "Should list FunctionsToExport alphabetically." {
-        Compare-Object -ReferenceObject $control -DifferenceObject $test | Should -BeNullOrEmpty
+        $test | Should -Be $control
     }
 }

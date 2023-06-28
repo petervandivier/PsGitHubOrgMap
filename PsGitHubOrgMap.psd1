@@ -28,8 +28,8 @@
         'Import-GomConfiguration'
         'Initialize-GomConfiguration'
         'Initialize-GomFolder'
+        'Sync-GomRepo'
         'Sync-GomTeam'
         'Sync-GomUser'
-        'Sync-GomRepo'
     )
 }

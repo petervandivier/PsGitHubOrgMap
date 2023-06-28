@@ -1,5 +1,5 @@
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
-    'PSUseDeclaredVarsMoreThanAssignments', 
+    'PSUseDeclaredVarsMoreThanAssignments',
     '',
     Justification = "Pester scoping can't handle variables."
 )]Param()

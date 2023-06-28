@@ -1,7 +1,7 @@
 function Deploy-GomRepo {
     [CmdletBinding(SupportsShouldProcess)]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
-        'PSShouldProcess', 
+        'PSShouldProcess',
         '',
         Justification = "Just passing the `-WhatIf` var through to child calls."
     )]
@@ -21,7 +21,7 @@ function Deploy-GomRepo {
         Write-Warning "Changing active GitHub Org Map configuration from '$($GomConfiguration.OrganizationName)' to '$OrganizationName'."
         Import-GomConfiguration -OrganizationName $OrganizationName
     }
-    
+
     $RepoRoot = Resolve-Path $GomConfiguration.Repository.Directory
 
     $RepoConfig = Get-Content "${RepoRoot}/Repos/${RepoName}.json" | ConvertFrom-Json

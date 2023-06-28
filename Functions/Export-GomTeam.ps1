@@ -17,7 +17,7 @@ function Export-GomTeam {
 
     $RepoRoot = $GomConfiguration.Repository.Directory
 
-    $Teams = Get-GitHubTeam -OrganizationName $OrganizationName 
+    $Teams = Get-GitHubTeam -OrganizationName $OrganizationName
 
     if($PSBoundParameters.ContainsKey('TeamName')){
         Write-Verbose "Exporting single team: '$TeamName'."

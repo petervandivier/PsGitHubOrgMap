@@ -39,8 +39,8 @@ function Deploy-GomTeam {
         Description = $Description
         Privacy = $Privacy
     }
-    $Team = Get-GitHubTeam -OrganizationName $OrganizationName 
-    | Where-Object TeamName -eq $TeamName 
+    $Team = Get-GitHubTeam -OrganizationName $OrganizationName
+    | Where-Object TeamName -eq $TeamName
     if($null -eq $Team){
         Write-Verbose "Adding new team '$TeamName' to organization '$OrganizationName'."
         $Team = New-GitHubTeam @TeamSettings
@@ -81,14 +81,14 @@ function Deploy-GomTeam {
         $MembershipDelta | ForEach-Object {
             $UserName = $_.InputObject
             switch ($_.SideIndicator) {
-                '=>' { 
+                '=>' {
                     Write-Verbose "Adding user '$UserName' to team '$TeamName' in organization '$OrganizationName'."
                     Add-GomTeamMember `
                         -OrganizationName $OrganizationName `
                         -TeamName $TeamName `
                         -UserName $UserName
                  }
-                '<=' { 
+                '<=' {
                     Write-Verbose "Removing user '$UserName' from team '$TeamName' in organization '$OrganizationName'."
                     $RmUserFromTeam = @{
                         Method = 'Delete'

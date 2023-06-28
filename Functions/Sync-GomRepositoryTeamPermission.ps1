@@ -1,7 +1,7 @@
 function Sync-GomRepositoryTeamPermission {
     [CmdletBinding(SupportsShouldProcess)]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(
-        'PSShouldProcess', 
+        'PSShouldProcess',
         '',
         Justification = "Just passing the `-WhatIf` var through to child calls."
     )]
@@ -72,7 +72,7 @@ function Sync-GomRepositoryTeamPermission {
         $TeamRole = $Permission.TeamRole
         switch ($Permission.Action) {
             'NO_ACTION' {
-                Write-Verbose "Config matches deployment for Team '$TeamName' with role '$TeamRole' in repo '$RepoName'." 
+                Write-Verbose "Config matches deployment for Team '$TeamName' with role '$TeamRole' in repo '$RepoName'."
             }
             'ADD_TEAM' {
                 Write-Verbose "Adding team '$TeamName' with role '$TeamRole' to repo '$RepoName'."

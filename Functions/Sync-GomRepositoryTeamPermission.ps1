@@ -75,7 +75,7 @@ function Sync-GomRepositoryTeamPermission {
                 Write-Verbose "Config matches deployment for Team '$TeamName' with role '$TeamRole' in repo '$RepoName'."
             }
             'ADD_TEAM' {
-                Write-Verbose "Adding team '$TeamName' with role '$TeamRole' to repo '$RepoName'."
+                Write-Host "Adding team '$TeamName' with role '$TeamRole' to repo '$RepoName'."
                 Set-GitHubRepositoryTeamPermission `
                     -OwnerName $OrganizationName `
                     -RepositoryName $RepoName `
@@ -83,7 +83,7 @@ function Sync-GomRepositoryTeamPermission {
                     -Permission $TeamRole
             }
             'UPDATE_ROLE' {
-                Write-Verbose "Updating team '$TeamName' with role '$TeamRole' to repo '$RepoName'."
+                Write-Host "Updating team '$TeamName' with role '$TeamRole' to repo '$RepoName'."
                 Set-GitHubRepositoryTeamPermission `
                     -OwnerName $OrganizationName `
                     -RepositoryName $RepoName `
@@ -92,7 +92,7 @@ function Sync-GomRepositoryTeamPermission {
 
             }
             'DELETE_TEAM' {
-                Write-Verbose "Remove team '$TeamName' with role '$TeamRole' from repo '$RepoName'."
+                Write-Host "Remove team '$TeamName' with role '$TeamRole' from repo '$RepoName'."
                 Remove-GitHubRepositoryTeamPermission `
                     -OwnerName $OrganizationName `
                     -RepositoryName $RepoName `

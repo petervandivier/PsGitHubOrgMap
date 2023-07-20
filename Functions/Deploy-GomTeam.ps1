@@ -42,7 +42,7 @@ function Deploy-GomTeam {
     $Team = Get-GitHubTeam -OrganizationName $OrganizationName
     | Where-Object TeamName -eq $TeamName
     if($null -eq $Team){
-        Write-Verbose "Adding new team '$TeamName' to organization '$OrganizationName'."
+        Write-Host "Adding new team '$TeamName' to organization '$OrganizationName'."
         $Team = New-GitHubTeam @TeamSettings
         $TeamSlug = $Team.TeamSlug
         foreach($UserName in $Members) {
@@ -57,19 +57,15 @@ function Deploy-GomTeam {
     } else {
         $UpdateNeeded = $false
         if($Team.description -ne $Description){
-            Write-Verbose "Team '$TeamName' description will change from '$($Team.description)' to '$Description'"
+            Write-Host "Team '$TeamName' description will change from '$($Team.description)' to '$Description'"
             $UpdateNeeded = $true
         }
         if($Team.privacy -ne $Privacy){
-            Write-Verbose "Team '$TeamName' privacy will change from '$($Team.privacy)' to '$Privacy'"
-            $UpdateNeeded = $true
-        }
-        if($Team.privacy -ne $Privacy){
-            Write-Verbose "Team '$TeamName' privacy will change from '$($Team.privacy)' to '$Privacy'"
+            Write-Host "Team '$TeamName' privacy will change from '$($Team.privacy)' to '$Privacy'"
             $UpdateNeeded = $true
         }
         if($UpdateNeeded){
-            Write-Verbose "Updating config for team '$TeamName' in organization '$OrganizationName'."
+            Write-Host "Updating config for team '$TeamName' in organization '$OrganizationName'."
             $Team = Set-GitHubTeam @TeamSettings
         } else {
             Write-Verbose "Deployment state for team '$TeamName' matches config. No action needed."
@@ -82,14 +78,14 @@ function Deploy-GomTeam {
             $UserName = $_.InputObject
             switch ($_.SideIndicator) {
                 '=>' {
-                    Write-Verbose "Adding user '$UserName' to team '$TeamName' in organization '$OrganizationName'."
+                    Write-Host "Adding user '$UserName' to team '$TeamName' in organization '$OrganizationName'."
                     Add-GomTeamMember `
                         -OrganizationName $OrganizationName `
                         -TeamName $TeamName `
                         -UserName $UserName
                  }
                 '<=' {
-                    Write-Verbose "Removing user '$UserName' from team '$TeamName' in organization '$OrganizationName'."
+                    Write-Host "Removing user '$UserName' from team '$TeamName' in organization '$OrganizationName'."
                     $RmUserFromTeam = @{
                         Method = 'Delete'
                         UriFragment = "orgs/$OrganizationName/teams/$TeamSlug/memberships/$UserName"

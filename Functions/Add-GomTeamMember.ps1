@@ -18,7 +18,7 @@ function Add-GomTeamMember {
     $IsMember = Test-GitHubOrganizationMember -OrganizationName $OrganizationName -UserName $UserName
 
     if($IsMember){
-        Write-Verbose "Adding user '$UserName' to team '$TeamName' in organization '$OrganizationName'."
+        Write-Host "Adding user '$UserName' to team '$TeamName' in organization '$OrganizationName'."
         $AddUserToTeam = @{
             Method = 'Put'
             UriFragment = "orgs/$OrganizationName/teams/$TeamSlug/memberships/$UserName"

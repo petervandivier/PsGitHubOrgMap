@@ -38,10 +38,10 @@ function Export-GomUser {
             if($NewConfig -eq $CurrentConfig){
                 Write-Verbose "Config file for user '$UserName' is accurate."
             } else {
-                Write-Verbose "Updating config file for user '$UserName'."
+                Write-Host "Updating config file for user '$UserName'."
             }
         } else {
-            Write-Verbose "Adding new config file for user '$UserName'."
+            Write-Host "Adding new config file for user '$UserName'."
         }
 
         $UserConfig | ConvertTo-Json | Set-Content $OutFile

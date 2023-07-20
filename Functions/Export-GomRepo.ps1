@@ -37,7 +37,7 @@ function Export-GomRepo {
             $repo | Add-Member -MemberType NoteProperty -Name Teams -Value $teams
         }
 
-        Write-Verbose "Adding new config file for repo '$repoName'."
+        Write-Host "Adding new config file for repo '$repoName'."
         $repo | ConvertTo-Json -Depth 5 | Set-Content "$RepoBaseDirectory/Repos/${repoName}.json"
     }
 

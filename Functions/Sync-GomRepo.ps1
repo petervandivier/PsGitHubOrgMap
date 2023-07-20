@@ -32,7 +32,7 @@ function Sync-GomRepo {
 
     $ExistingRepos | Where-Object name -NotIn $ConfigRepos.Name | ForEach-Object {
         $RepoName = $_.name
-        Write-Verbose "Deleting Repo '$RepoName' from organization '$OrganizationName'."
+        Write-Host "Deleting Repo '$RepoName' from organization '$OrganizationName'."
         Remove-GitHubRepository `
             -OwnerName $OrganizationName `
             -RepositoryName $RepoName `

@@ -41,7 +41,7 @@ function Deploy-GomUser {
             } | ConvertTo-Json -Compress
             Description = "Invite user '$UserName' to join organization '$OrganizationName'."
         }
-        Write-Verbose "Inviting user '$UserName' to join organization '$OrganizationName'."
+        Write-Host "Inviting user '$UserName' to join organization '$OrganizationName'."
         $Invite = Invoke-GHRestMethod @InviteUser
 
         $Invite.inviter = $Invite.inviter | Select-Object -ExcludeProperty *url, gravatar_id

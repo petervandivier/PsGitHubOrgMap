@@ -29,7 +29,7 @@ function Deploy-GomRepo {
     $ExistingRepo = Get-GitHubRepository -OwnerName $OrganizationName -RepositoryName $RepoName -ErrorAction SilentlyContinue
 
     if($null -eq $ExistingRepo){
-        Write-Verbose "Deploying NEW repository '$RepoName' to organization '$OrganizationName'."
+        Write-Host "Deploying NEW repository '$RepoName' to organization '$OrganizationName'."
         New-GitHubRepository -OrganizationName $OrganizationName -RepositoryName $RepoName | Format-List
     } else {
         $ExistingPermissions = Invoke-GHRestMethod -UriFragment "repos/$OrganizationName/$RepoName/teams" -Method Get

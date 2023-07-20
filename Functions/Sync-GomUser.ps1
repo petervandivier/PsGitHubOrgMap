@@ -30,7 +30,7 @@ function Sync-GomUser {
     foreach($User in $ConfigUsers) {
         $UserName = $User.Name
         if($UserName -NotIn $ExistingUsers.login){
-            Write-Verbose "Adding user '$UserName' to Organization '$OrganizationName'."
+            Write-Host "Adding user '$UserName' to Organization '$OrganizationName'."
             Deploy-GomUser -OrganizationName $OrganizationName -UserName $UserName
         } else{
             Write-Verbose "User '$UserName' already exists in Organization '$OrganizationName'."
@@ -41,13 +41,12 @@ function Sync-GomUser {
         $_.login -NotIn $ConfigUsers.Name
     } | ForEach-Object {
         $UserName = $_.login
-        Write-Verbose "Removing user '$UserName' from Organization '$OrganizationName'."
+        Write-Host "Removing user '$UserName' from Organization '$OrganizationName'."
         $RemoveUser = @{
             UriFragment = "orgs/$OrganizationName/members/$UserName"
             Method  = 'Delete'
             Description = "Remove user '$UserName' from organization '$OrganizationName'."
         }
-        Write-Verbose "Removing user '$UserName' from organization '$OrganizationName'."
         # ?TODO: log something here? Delete response contains no payload
         # n.b. double-delete attempt throws a reasonably helpful error
         Invoke-GHRestMethod @RemoveUser

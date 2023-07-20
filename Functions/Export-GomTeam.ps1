@@ -50,10 +50,10 @@ function Export-GomTeam {
             if($NewConfig -eq $CurrentConfig){
                 Write-Verbose "Config file for user '$TeamName' is accurate."
             } else {
-                Write-Verbose "Updating config file for team '$TeamName'."
+                Write-Host "Updating config file for team '$TeamName'."
             }
         } else {
-            Write-Verbose "Adding new config file for team '$TeamName'."
+            Write-Host "Adding new config file for team '$TeamName'."
         }
 
         $TeamConfig | ConvertTo-Json | Set-Content $OutFile

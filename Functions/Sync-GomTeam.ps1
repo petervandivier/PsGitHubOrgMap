@@ -34,7 +34,7 @@ function Sync-GomTeam {
 
     $ExistingTeams | Where-Object name -NotIn $ConfigTeams.Name | ForEach-Object {
         $TeamName = $_.TeamName
-        Write-Verbose "Deleting team '$TeamName' from organization '$OrganizationName'."
+        Write-Host "Deleting team '$TeamName' from organization '$OrganizationName'."
         Remove-GitHubTeam -OrganizationName $OrganizationName -TeamName $TeamName
     }
 }

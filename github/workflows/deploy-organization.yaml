@@ -1,0 +1,29 @@
+name: Deploy-Organization
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: PsGitHubOrgMap
+        shell: pwsh
+        run: |
+          mkdir ~/.PsGitHubOrgMap
+          $config = Get-Content Config/Runner.json | ConvertFrom-Json
+          $config.Repository.Directory = (Get-Location).ToString()
+          $config | ConvertTo-Json | Set-Content ~/.PsGitHubOrgMap/Default.json
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module PsGitHubOrgMap -RequiredVersion '0.0.3'
+          Import-Module PsGitHubOrgMap
+          $secureString = ("${{ secrets.ORG_MAP_PAT }}" | ConvertTo-SecureString -AsPlainText -Force)
+          $cred = New-Object System.Management.Automation.PSCredential "<username is ignored>", $secureString
+          Set-GitHubAuthentication -Credential $cred
+          $secureString, $cred = $null
+          Deploy-GomOrganization -Verbose

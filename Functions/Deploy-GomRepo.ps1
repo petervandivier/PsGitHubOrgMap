@@ -31,21 +31,21 @@ function Deploy-GomRepo {
     if($null -eq $ExistingRepo){
         Write-Host "Deploying NEW repository '$RepoName' to organization '$OrganizationName'."
         New-GitHubRepository -OrganizationName $OrganizationName -RepositoryName $RepoName | Format-List
-    } else {
-        $ExistingPermissions = Invoke-GHRestMethod -UriFragment "repos/$OrganizationName/$RepoName/teams" -Method Get
+    }
 
-        if(
-           $null -eq $RepoConfig.Teams -and
-           $null -eq $ExistingPermissions
-        ){
-            Write-Verbose "No permissions found in config or deployment for repo '$RepoName'."
-        } else {
-            Write-Verbose "Synchronizing permissions for repo '$RepoName'."
-            Sync-GomRepositoryTeamPermission `
-                -OrganizationName $OrganizationName `
-                -RepoName $RepoName `
-                -ConfigPermissions $RepoConfig.Teams `
-                -ExistingPermissions $ExistingPermissions
-        }
+    $ExistingPermissions = Invoke-GHRestMethod -UriFragment "repos/$OrganizationName/$RepoName/teams" -Method Get
+
+    if(
+        $null -eq $RepoConfig.Teams -and
+        $null -eq $ExistingPermissions
+    ){
+        Write-Verbose "No permissions found in config or deployment for repo '$RepoName'."
+    } else {
+        Write-Verbose "Synchronizing permissions for repo '$RepoName'."
+        Sync-GomRepositoryTeamPermission `
+            -OrganizationName $OrganizationName `
+            -RepoName $RepoName `
+            -ConfigPermissions $RepoConfig.Teams `
+            -ExistingPermissions $ExistingPermissions
     }
 }

@@ -11,7 +11,6 @@ function Export-GomRepo {
         Write-Warning "Changing active GitHub Org Map configuration from '$($GomConfiguration.OrganizationName)' to '$OrganizationName'."
         Import-GomConfiguration -OrganizationName $OrganizationName
     }
-
     $RepoBaseDirectory = Resolve-Path $GomConfiguration.Repository.Directory
 
     Get-GitHubRepository -OrganizationName $OrganizationName | ForEach-Object {
@@ -36,7 +35,33 @@ function Export-GomRepo {
         if($teams.Count -gt 0){
             $repo | Add-Member -MemberType NoteProperty -Name Teams -Value $teams
         }
-
+        
+        Write-Host "Looking for CODEOWNERS file in $repoName at .github/CODEOWNERS"
+        try{
+            $codeOwnersFile = $($_ | Get-GithubContent -path .github/CODEOWNERS)
+        }
+        catch{
+            Write-Host "No CODEOWNERS file found...`n"
+            $codeOwnersFile = $null
+            $codeOwnersContent = $null
+        }
+        
+        if($codeOwnersFile){ 
+            $codeOwnersContent = [Text.Encoding]::Utf8.GetString([Convert]::FromBase64String($codeOwnersFile.content))
+            Write-Host "Found codeowners with content`n$codeOwnersContent"
+            $lines = $codeOwnersContent -split "`n"
+            $codeOwnersJson = @{}
+            foreach ($line in $lines) {
+                $lineChunks = $line -split " "
+                $path = $lineChunks[0]
+                $teamAssignments = $lineChunks[1..$lineChunks.Length] -join " "
+                if($path){
+                    $codeOwnersJson[$path] = $teamAssignments
+                }
+            }
+            $repo | Add-Member -MemberType NoteProperty -Name CodeOwners -Value $codeOwnersJson
+        }
+        
         Write-Host "Adding new config file for repo '$repoName'."
         $repo | ConvertTo-Json -Depth 5 | Set-Content "$RepoBaseDirectory/Repos/${repoName}.json"
     }

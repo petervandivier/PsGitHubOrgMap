@@ -33,6 +33,18 @@ function Deploy-GomRepo {
         New-GitHubRepository -OrganizationName $OrganizationName -RepositoryName $RepoName | Format-List
     }
 
+    if($RepoConfig.CodeOwners){
+        $CodeOwnersContent = ""
+        foreach ($property in $($RepoConfig.CodeOwners | Get-Member -MemberType Properties)){
+            $path = $($property.Name)
+            $owners = $RepoConfig.CodeOwners.$path
+            $CodeOwnersContent += "$path $owners`n"
+        }
+        Write-Output "Complete CODEOWNERS content is`n$CodeOwnersContent"
+        Set-GitHubContent -Path .github/CODEOWNERS -RepositoryName $RepoName -OwnerName $OrganizationName -Content $CodeOwnersContent -CommitMessage "Added CODEOWNERS"
+        Write-Output "Wrote CODEOWNERS file for $RepoName to .github/CODEOWNERS"
+    }
+    
     $ExistingPermissions = Invoke-GHRestMethod -UriFragment "repos/$OrganizationName/$RepoName/teams" -Method Get
 
     if(

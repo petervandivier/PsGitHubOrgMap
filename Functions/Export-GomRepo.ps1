@@ -43,7 +43,6 @@ function Export-GomRepo {
         catch{
             Write-Host "No CODEOWNERS file found...`n"
             $codeOwnersFile = $null
-            $codeOwnersContent = $null
         }
         
         if($codeOwnersFile){ 

@@ -36,18 +36,18 @@ function Export-GomRepo {
             $repo | Add-Member -MemberType NoteProperty -Name Teams -Value $teams
         }
         
-        Write-Host "Looking for CODEOWNERS file in $repoName at .github/CODEOWNERS"
+        Write-Verbose "Looking for CODEOWNERS file in $repoName at .github/CODEOWNERS"
         try{
             $codeOwnersFile = $($_ | Get-GithubContent -path .github/CODEOWNERS)
         }
         catch{
-            Write-Host "No CODEOWNERS file found...`n"
+            Write-Verbose "No CODEOWNERS file found...`n"
             $codeOwnersFile = $null
         }
         
         if($codeOwnersFile){ 
             $codeOwnersContent = [Text.Encoding]::Utf8.GetString([Convert]::FromBase64String($codeOwnersFile.content))
-            Write-Host "Found codeowners with content`n$codeOwnersContent"
+            Write-Verbose "Found codeowners with content`n$codeOwnersContent"
             $lines = $codeOwnersContent -split "`n"
             $codeOwnersJson = @{}
             foreach ($line in $lines) {
@@ -61,8 +61,8 @@ function Export-GomRepo {
             $repo | Add-Member -MemberType NoteProperty -Name CodeOwners -Value $codeOwnersJson
         }
         
-        Write-Host "Adding new config file for repo '$repoName'."
         $repo | ConvertTo-Json -Depth 5 | Set-Content "$RepoBaseDirectory/Repos/${repoName}.json"
+        Write-Host "Added new config file for repo '$repoName'."
     }
 
     Pop-Location

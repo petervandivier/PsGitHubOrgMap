@@ -40,9 +40,9 @@ function Deploy-GomRepo {
             $owners = $RepoConfig.CodeOwners.$path
             $CodeOwnersContent += "$path $owners`n"
         }
-        Write-Output "Complete CODEOWNERS content is`n$CodeOwnersContent"
+        Write-Verbose "Complete CODEOWNERS content is`n$CodeOwnersContent"
         Set-GitHubContent -Path .github/CODEOWNERS -RepositoryName $RepoName -OwnerName $OrganizationName -Content $CodeOwnersContent -CommitMessage "Added CODEOWNERS"
-        Write-Output "Wrote CODEOWNERS file for $RepoName to .github/CODEOWNERS"
+        Write-Host "Wrote CODEOWNERS file for $RepoName to .github/CODEOWNERS"
     }
     
     $ExistingPermissions = Invoke-GHRestMethod -UriFragment "repos/$OrganizationName/$RepoName/teams" -Method Get

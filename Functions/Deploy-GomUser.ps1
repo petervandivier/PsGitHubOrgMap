@@ -17,7 +17,12 @@ function Deploy-GomUser {
 
         [Parameter(Mandatory)]
         [string]
-        $UserName
+        $UserName,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $UserRole
     )
 
     $User = Get-GitHubUser -UserName $UserName -ErrorAction SilentlyContinue
@@ -27,21 +32,27 @@ function Deploy-GomUser {
 
     $IsMember = Test-GitHubOrganizationMember -OrganizationName $OrganizationName -UserName $UserName
     if($IsMember){
-        Write-Verbose "User '$UserName' is already a member of Organization '$OrganizationName'."
+        Write-Verbose "User '$UserName' is already a member of Organization '$OrganizationName'. Ensuring '$UserName' has $UserRole level permissions..."
+        $UpdateRole = @{
+            UriFragment = "orgs/$OrganizationName/memberships/$UserName"
+            Method = "Put"
+            Body = @{
+                role = $UserRole
+            } | ConvertTo-Json -Compress
+        }
+        Invoke-GHRestMethod @UpdateRole | Out-Null
         return
     } else {
-        # TODO: add support for add-as-admin/billing manager
-        # TODO: add teams
         $InviteUser = @{
             UriFragment = "orgs/$OrganizationName/invitations"
             Method  = 'Post'
             Body = @{
                 invitee_id = $User.id
-                role = "direct_member"
+                role = if($UserRole -eq "admin") {"admin"} else {"direct_member"}
             } | ConvertTo-Json -Compress
             Description = "Invite user '$UserName' to join organization '$OrganizationName'."
         }
-        Write-Host "Inviting user '$UserName' to join organization '$OrganizationName'."
+        Write-Host "Inviting user '$UserName' to join organization '$OrganizationName' with $UserRole permissions."
         $Invite = Invoke-GHRestMethod @InviteUser
 
         $Invite.inviter = $Invite.inviter | Select-Object -ExcludeProperty *url, gravatar_id

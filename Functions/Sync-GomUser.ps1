@@ -29,12 +29,8 @@ function Sync-GomUser {
 
     foreach($User in $ConfigUsers) {
         $UserName = $User.Name
-        if($UserName -NotIn $ExistingUsers.login){
-            Write-Host "Adding user '$UserName' to Organization '$OrganizationName'."
-            Deploy-GomUser -OrganizationName $OrganizationName -UserName $UserName
-        } else{
-            Write-Verbose "User '$UserName' already exists in Organization '$OrganizationName'."
-        }
+        $UserRole = $User.Role
+        Deploy-GomUser -OrganizationName $OrganizationName -UserName $UserName -UserRole $UserRole
     }
 
     $ExistingUsers | Where-Object {

@@ -6,7 +6,11 @@
     GUID = '069bfbf7-4926-48f9-b626-3829fdae9fe7'
     Author = 'Peter.Vandivier'
     Copyright = '(c) Peter.Vandivier. All rights reserved.'
-    Description = 'For a given GitHub Org, dump the membership & repository configuration to the filesystem'
+    Description = @(
+        'Dump & restore the configuration of a GitHub organization to an infra-as-code config repo. '
+        'For a given GitHub Org, dump the membership & repository configuration to the filesystem. '
+        'For a filesystem record of a GH Org config, deploy that org to match the filesystem record. '
+    )
     RequiredModules = @(
         @{
             ModuleName = 'PowerShellForGitHub'
@@ -31,6 +35,7 @@
         'Sync-GomRepo'
         'Sync-GomTeam'
         'Sync-GomUser'
+        'Test-GomConfiguration'
     )
     PrivateData = @{
         PSData = @{

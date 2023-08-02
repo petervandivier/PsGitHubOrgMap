@@ -1,16 +1,16 @@
 function Initialize-GomFolder {
     [CmdletBinding()]
     param (
-        [Parameter()]
+        [Parameter(Position = 0)]
         [string]
         $RepoBaseDirectory
     )
 
-    $Folder = New-Item -ItemType Directory -Path $RepoBaseDirectory
+    $Folder = New-Item -ItemType Directory -Path $RepoBaseDirectory -Force
 
     Set-Location $Folder
 
-    New-Item -ItemType Directory -Name Users
-    New-Item -ItemType Directory -Name Teams
-    New-Item -ItemType Directory -Name Repos
+    New-Item -ItemType Directory -Name Users -Force
+    New-Item -ItemType Directory -Name Teams -Force
+    New-Item -ItemType Directory -Name Repos -Force
 }

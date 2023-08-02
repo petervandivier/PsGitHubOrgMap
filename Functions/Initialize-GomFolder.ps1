@@ -1,7 +1,7 @@
 function Initialize-GomFolder {
     [CmdletBinding()]
     param (
-        [Parameter()]
+        [Parameter(Position = 0)]
         [string]
         $RepoBaseDirectory
     )

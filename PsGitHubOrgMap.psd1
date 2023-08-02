@@ -35,7 +35,6 @@
         'Sync-GomRepo'
         'Sync-GomTeam'
         'Sync-GomUser'
-        'Test-GomConfiguration'
     )
     PrivateData = @{
         PSData = @{

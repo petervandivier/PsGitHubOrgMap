@@ -35,7 +35,7 @@ function Export-GomUser {
             Method = "Get"
         }
         
-        $UserRole = $(Invoke-GHRestMethod @GetUserRole).Role
+        $UserRole = (Invoke-GHRestMethod @GetUserRole).Role
         $UserConfig | Add-Member -MemberType NoteProperty -Name Role -Value $UserRole
 
         $OutFile = "${RepoRoot}/Users/${UserName}.json"

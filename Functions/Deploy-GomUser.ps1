@@ -32,16 +32,27 @@ function Deploy-GomUser {
 
     $IsMember = Test-GitHubOrganizationMember -OrganizationName $OrganizationName -UserName $UserName
     if($IsMember){
-        Write-Verbose "User '$UserName' is already a member of Organization '$OrganizationName'. Ensuring '$UserName' has $UserRole level permissions..."
-        $UpdateRole = @{
+        Write-Verbose "User '$UserName' is already a member of Organization '$OrganizationName'. Validating permissions..." 
+        $GetUserRole = @{
             UriFragment = "orgs/$OrganizationName/memberships/$UserName"
-            Method = "Put"
-            Body = @{
-                role = $UserRole
-            } | ConvertTo-Json -Compress
+            Method = "Get"
         }
-        Invoke-GHRestMethod @UpdateRole | Out-Null
-        return
+        
+        $CurrentRole = $(Invoke-GHRestMethod @GetUserRole).Role
+        if($CurrentRole -ne $UserRole){
+            Write-Verbose "User '$USerName' is currently assigned the '$CurrentRole' role. Assigning user '$UserName' to role '$UserRole'."
+            $UpdateRole = @{
+                UriFragment = "orgs/$OrganizationName/memberships/$UserName"
+                Method = "Put"
+                Body = @{
+                    role = $UserRole
+                } | ConvertTo-Json -Compress
+            }
+            Invoke-GHRestMethod @UpdateRole | Out-Null
+            Write-Verbose "Successfully updated user '$UserName'."
+            return
+        }
+        else{Write-Verbose "User '$UserName' already has their role correctly set."}
     } else {
         $InviteUser = @{
             UriFragment = "orgs/$OrganizationName/invitations"
@@ -52,9 +63,9 @@ function Deploy-GomUser {
             } | ConvertTo-Json -Compress
             Description = "Invite user '$UserName' to join organization '$OrganizationName'."
         }
-        Write-Host "Inviting user '$UserName' to join organization '$OrganizationName' with $UserRole permissions."
+        Write-Host "Inviting user '$UserName' to join organization '$OrganizationName' with with role '$UserRole'."
         $Invite = Invoke-GHRestMethod @InviteUser
-
+        Write-Host "Successfully invited user '$UserName' to organization '$OrganizationName'"
         $Invite.inviter = $Invite.inviter | Select-Object -ExcludeProperty *url, gravatar_id
         $RepoRoot = $GomConfiguration.Repository.Directory
         $InvitesDirectory = New-Item -Path "$RepoRoot/Users/Invites" -ItemType Directory -Force

@@ -6,7 +6,7 @@ function Export-GomRepo {
         [string]
         $OrganizationName
     )
-
+    $CodeOwnersPath = ".github/CODEOWNERS"
     if($OrganizationName -ne $GomConfiguration.OrganizationName){
         Write-Warning "Changing active GitHub Org Map configuration from '$($GomConfiguration.OrganizationName)' to '$OrganizationName'."
         Import-GomConfiguration -OrganizationName $OrganizationName
@@ -36,12 +36,12 @@ function Export-GomRepo {
             $repo | Add-Member -MemberType NoteProperty -Name Teams -Value $teams
         }
         
-        Write-Verbose "Looking for CODEOWNERS file in $repoName at .github/CODEOWNERS"
+        Write-Verbose "Looking for CODEOWNERS file in repo '$repoName' at $CodeOwnersPath"
         try{
-            $codeOwnersFile = $($_ | Get-GithubContent -path .github/CODEOWNERS)
+            $codeOwnersFile = $($_ | Get-GithubContent -path $CodeOwnersPath)
         }
         catch{
-            Write-Verbose "No CODEOWNERS file found...`n"
+            Write-Verbose "No CODEOWNERS file found in repo '$repoName'."
             $codeOwnersFile = $null
         }
         

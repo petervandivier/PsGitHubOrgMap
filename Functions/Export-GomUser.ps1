@@ -30,6 +30,14 @@ function Export-GomUser {
             $UserConfig | Add-Member -MemberType NoteProperty -Name UserType -Value $_.type
         }
 
+        $GetUserRole = @{
+            UriFragment = "orgs/$OrganizationName/memberships/$UserName"
+            Method = "Get"
+        }
+        
+        $UserRole = (Invoke-GHRestMethod @GetUserRole).Role
+        $UserConfig | Add-Member -MemberType NoteProperty -Name Role -Value $UserRole
+
         $OutFile = "${RepoRoot}/Users/${UserName}.json"
 
         if(Test-Path $OutFile){

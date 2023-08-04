@@ -6,12 +6,11 @@ function Export-GomRepo {
         [string]
         $OrganizationName
     )
-
+    $CodeOwnersPath = ".github/CODEOWNERS"
     if($OrganizationName -ne $GomConfiguration.OrganizationName){
         Write-Warning "Changing active GitHub Org Map configuration from '$($GomConfiguration.OrganizationName)' to '$OrganizationName'."
         Import-GomConfiguration -OrganizationName $OrganizationName
     }
-
     $RepoBaseDirectory = Resolve-Path $GomConfiguration.Repository.Directory
 
     Get-GitHubRepository -OrganizationName $OrganizationName | ForEach-Object {
@@ -36,9 +35,34 @@ function Export-GomRepo {
         if($teams.Count -gt 0){
             $repo | Add-Member -MemberType NoteProperty -Name Teams -Value $teams
         }
-
-        Write-Host "Adding new config file for repo '$repoName'."
+        
+        Write-Verbose "Looking for CODEOWNERS file in repo '$repoName' at $CodeOwnersPath"
+        try{
+            $codeOwnersFile = $($_ | Get-GithubContent -path $CodeOwnersPath)
+        }
+        catch{
+            Write-Verbose "No CODEOWNERS file found in repo '$repoName'."
+            $codeOwnersFile = $null
+        }
+        
+        if($codeOwnersFile){ 
+            $codeOwnersContent = [Text.Encoding]::Utf8.GetString([Convert]::FromBase64String($codeOwnersFile.content))
+            Write-Verbose "Found codeowners with content`n$codeOwnersContent"
+            $lines = $codeOwnersContent -split "`n"
+            $codeOwnersJson = @{}
+            foreach ($line in $lines) {
+                $lineChunks = $line -split " "
+                $path = $lineChunks[0]
+                $teamAssignments = $lineChunks[1..$lineChunks.Length] -join " "
+                if($path){
+                    $codeOwnersJson[$path] = $teamAssignments
+                }
+            }
+            $repo | Add-Member -MemberType NoteProperty -Name CodeOwners -Value $codeOwnersJson
+        }
+        
         $repo | ConvertTo-Json -Depth 5 | Set-Content "$RepoBaseDirectory/Repos/${repoName}.json"
+        Write-Host "Added new config file for repo '$repoName'."
     }
 
     Pop-Location

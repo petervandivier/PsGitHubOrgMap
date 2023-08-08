@@ -17,7 +17,7 @@ function Export-GomRepo {
         $ExistingRepo = $_
         $repoName = $ExistingRepo.name
         Write-Verbose "Starting export for repo '$repoName'."
-        $JSONConfigFilePath = "$RepoBaseDirectory/Repos/${repoName}.json"
+        $JSONConfigFilePath = "$RepoBaseDirectory/Repos/$repoName.json"
         $teams = @{}
         $permissions = Invoke-GHRestMethod -UriFragment "repos/$OrganizationName/$repoName/teams" -Method Get
 
@@ -78,9 +78,8 @@ function Export-GomRepo {
             $repo | Add-Member -MemberType NoteProperty -Name CodeOwners -Value $codeOwnersJson
         }
         
-        try{$existingJSONContent = Get-Content -Path $JSONConfigFilePath -ErrorAction Stop}
+        try{$existingJSONContent = Get-Content -Path $JSONConfigFilePath -ErrorAction Stop | ConvertFrom-Json | ConvertTo-Json -Depth 10}
         catch{$existingJSONContent = @{}}
-
         if(Compare-Object $existingJSONContent $($repo | ConvertTo-Json)){
             $repo | ConvertTo-Json -Depth 5 | Set-Content $JSONConfigFilePath
             Write-Host "Updated config file for repo '$repoName'."

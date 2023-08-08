@@ -55,11 +55,13 @@ function Sync-GomRepositoryTeamPermission {
     $ExistingPermissions | Where-Object {
         $_.name -NotIn $JoinedPermissions.TeamName
     } | ForEach-Object {
-        $JoinedPermissions += [PSCustomObject]@{
-            TeamName = $_.name
-            TeamRole = $null
-            Action = 'DELETE_TEAM'
-            PreviousRole = $ExistingTeam.permission
+        if($_.name){
+            $JoinedPermissions += [PSCustomObject]@{
+                TeamName = $_.name
+                TeamRole = $null
+                Action = 'DELETE_TEAM'
+                PreviousRole = $ExistingTeam.permission
+            }
         }
     }
 
@@ -96,7 +98,8 @@ function Sync-GomRepositoryTeamPermission {
                 Remove-GitHubRepositoryTeamPermission `
                     -OwnerName $OrganizationName `
                     -RepositoryName $RepoName `
-                    -TeamName $TeamName
+                    -TeamName $TeamName `
+                    -Force
             }
         }
     }

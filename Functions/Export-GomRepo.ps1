@@ -14,7 +14,10 @@ function Export-GomRepo {
     $RepoBaseDirectory = Resolve-Path $GomConfiguration.Repository.Directory
 
     Get-GitHubRepository -OrganizationName $OrganizationName | ForEach-Object {
-        $repoName = $_.name
+        $ExistingRepo = $_
+        $repoName = $ExistingRepo.name
+        Write-Verbose "Starting export for repo '$repoName'."
+        $JSONConfigFilePath = "$RepoBaseDirectory/Repos/${repoName}.json"
         $teams = @{}
         $permissions = Invoke-GHRestMethod -UriFragment "repos/$OrganizationName/$repoName/teams" -Method Get
 
@@ -26,16 +29,30 @@ function Export-GomRepo {
 
         $repo = [PsCustomObject]@{
             Name = $repoName
-            Id = $_.RepositoryId
-            Url = $_.RepositoryUrl
-            Description = $_.description
-            DefaultBranch = $_.default_branch
+            Id = $ExistingRepo.RepositoryId
+            Url = $ExistingRepo.RepositoryUrl
+            Description = $ExistingRepo.description
+            DefaultBranch = $ExistingRepo.default_branch
         }
-
+        
+        # Get teams  
         if($teams.Count -gt 0){
             $repo | Add-Member -MemberType NoteProperty -Name Teams -Value $teams
         }
         
+        # Get Branch Protection
+        Write-Verbose "Checking for protection status on branch '$($ExistingRepo.default_branch)'"
+        try{
+            Get-GitHubRepositoryBranchProtectionRule -OwnerName $OrganizationName -RepositoryName $repoName -BranchName $ExistingRepo.default_branch | Out-Null
+            $DefaultBranchCurrentlyProtected = $true
+        }
+        catch [Microsoft.PowerShell.Commands.HttpResponseException]{
+            $DefaultBranchCurrentlyProtected = $false
+        }
+
+        $repo | Add-Member -MemberType NoteProperty -Name DefaultBranchIsProtected -Value $DefaultBranchCurrentlyProtected
+        
+        # Get CODEOWNERS
         Write-Verbose "Looking for CODEOWNERS file in repo '$repoName' at $CodeOwnersPath"
         try{
             $codeOwnersFile = $($_ | Get-GithubContent -path $CodeOwnersPath)
@@ -61,8 +78,14 @@ function Export-GomRepo {
             $repo | Add-Member -MemberType NoteProperty -Name CodeOwners -Value $codeOwnersJson
         }
         
-        $repo | ConvertTo-Json -Depth 5 | Set-Content "$RepoBaseDirectory/Repos/${repoName}.json"
-        Write-Host "Added new config file for repo '$repoName'."
+        try{$existingJSONContent = Get-Content -Path $JSONConfigFilePath -ErrorAction Stop}
+        catch{$existingJSONContent = @{}}
+
+        if(Compare-Object $existingJSONContent $($repo | ConvertTo-Json)){
+            $repo | ConvertTo-Json -Depth 5 | Set-Content $JSONConfigFilePath
+            Write-Host "Updated config file for repo '$repoName'."
+        }
+        else{Write-Verbose "No changes required for repo '$repoName'."}
     }
 
     Pop-Location
